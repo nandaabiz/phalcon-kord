@@ -1,5 +1,7 @@
-var chordtag = '{~}';
-chord_regex = new RegExp(/([CDEFGAB](#|b)?)((M|m|Maj|min|aug|dim|sus|add)?(6|7|9|11|13|-5|\+5)?)(\s|-)/g);
+var opentag = '{~}';
+var chordtag = '{~cl}';
+
+chord_regex = new RegExp(/([CDEFGAB](#|b)?)((M|m|Maj|min|aug|dim|sus|add)?(6|7|9|11|13|-5|\+5)?)(\s|-|\/|\(|\.)+/g);
 $(function () {
 	/* Resolve conflict in jQuery UI tooltip with Bootstrap tooltip */
 	// $.widget.bridge('uibutton', $.ui.button);

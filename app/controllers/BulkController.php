@@ -1,7 +1,7 @@
 <?php
 
 class BulkController extends ControllerBase {
-	public $regex_chord = "/([CDEFGAB](#|b)?)((M|m|Maj|min|aug|dim|sus|add)?(6|7|9|11|13|-5|\+5)?)(\s|-)?/";
+	public $regex_chord = "/([CDEFGAB](#|b)?)((M|m|Maj|min|aug|dim|sus|add)?(6|7|9|11|13|-5|\+5)?)(\s|-|\/|\(|\.)+/";
 	public $keys = array('C','C#','D','D#','E','F','F#','G','G#','A','Bb','B');
 	public $base_interval = array(0,5,7);
 	public $markedtag = '{~}';
@@ -38,6 +38,8 @@ class BulkController extends ControllerBase {
 			$contentArray = explode("\n", $chord->content);
 			$found = false;
 			foreach ($contentArray as &$line) {
+				$line = str_replace($this->markedtag, '', $line);
+				$line = str_replace($this->chordtag, '', $line);
 				if (preg_match($this->regex_chord, $line)) {
 					$line .= ' '.$this->chordtag;
 					$found = true;
@@ -65,7 +67,7 @@ class BulkController extends ControllerBase {
 			$this->singleTagging($chord);
 		} else {
 			$chords = Chords::find(array(
-				"base = ''",
+				// "base = ''",
 				"order" => "artist,title"
 				));
 			if ($chords) {
@@ -82,7 +84,7 @@ class BulkController extends ControllerBase {
 			$temp_chords = array();
 			preg_match_all($this->regex_chord, $chord->content, $temp_chords, PREG_PATTERN_ORDER);
 			$temp_chords = $temp_chords[0];
-			$temp_chords = array_unique(array_map(trim, $temp_chords));
+			$temp_chords = array_unique(array_map(array($this,"trimChord"), $temp_chords));
 			$base_key = '';
 			foreach ($temp_chords as $key) {
 				if (!in_array($key, $this->keys)) {
@@ -122,6 +124,12 @@ class BulkController extends ControllerBase {
 			$base_keys[] = $this->keys[$cur_pos];
 		}
 		return $base_keys;
+	}
+
+	public function trimChord($string) {
+		$string = preg_replace("/(\/|\(|\.)/", '', $string);
+		$string = rtrim($string,'-');
+		return trim($string);
 	}
 
 }

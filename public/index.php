@@ -1,6 +1,5 @@
 <?php
 use Phalcon\Events\Manager as EventsManager;
-use Phalcon\Logger\Adapter\File as FileLogger;
 use Phalcon\Db\Profiler as DbProfiler;
 use Phalcon\Db\Adapter\Pdo\Mysql as DbAdapter;
 try {
@@ -21,7 +20,6 @@ try {
 	$di->set('db', function() use ($config, $di) {
 		$eventsManager = new EventsManager();
 		$profiler      = $di->getProfiler();
-		$logger = new FileLogger($config->file->log_db);
 		//Listen all the database events
 		$eventsManager->attach('db', function($event, $connection) use ($profiler) {
 			if ($event->getType() == 'beforeQuery') {
@@ -45,7 +43,7 @@ try {
 	//Setup a base URI so that all generated URIs include the "tutorial" folder
 	$di->set('url', function(){
 		$url = new \Phalcon\Mvc\Url();
-		$url->setBaseUri('/nkord.com/');
+		$url->setBaseUri('/kord/');
 		return $url;
 	});
 
